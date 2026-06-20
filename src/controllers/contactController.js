@@ -1,8 +1,11 @@
 const transporter = require('../services/mailService');
 
 const sendContactMail = async (req, res) => {
+    console.log("CONTACT REQUEST RECEIVED");
+  console.log(req.body);
     try {
         const { name, email, subject, message } = req.body;
+        console.log("About to send email");
 
         await transporter.sendMail({
             from: process.env.EMAIL,
@@ -23,6 +26,7 @@ const sendContactMail = async (req, res) => {
                 <p>${message}</p>
             `
         });
+        console.log("Email sent successfully");
 
         res.status(200).json({
             success: true,
@@ -30,8 +34,8 @@ const sendContactMail = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
-
+        console.error(error.message);
+        console.error("EMAIL ERROR:", error);
         res.status(500).json({
             success: false,
             message: 'Failed to send message'

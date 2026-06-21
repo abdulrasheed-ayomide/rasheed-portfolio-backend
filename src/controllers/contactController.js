@@ -1,36 +1,47 @@
-const transporter = require('../services/mailService');
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendContactMail = async (req, res) => {
-    try {
-        const { name, email, subject, message } = req.body;
+  try {
+    const { name, email, subject, message } = req.body;
 
-      const info = await transporter.sendMail({
-    from: process.env.EMAIL,
-    to: process.env.EMAIL,
-    replyTo: email,
-    subject: `Portfolio Contact: ${subject}`,
-    html: `
-      <h2>New Portfolio Contact</h2>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Subject:</strong> ${subject}</p>
-      <p><strong>Message:</strong></p>
-      <p>${message}</p>
-    `
-});
+    console.log("CONTACT REQUEST RECEIVED:", {
+      name,
+      email,
+      subject,
+    });
 
-        res.status(200).json({
-            success: true,
-            message: 'Message sent successfully'
-        });
+    const data = await resend.emails.send({
+      from: "Rasheed Portfolio <onboarding@resend.dev>",
+      to: process.env.EMAIL,
+      replyTo: email,
+      subject: `Portfolio Contact: ${subject}`,
+      html: `
+        <h2>New Portfolio Contact</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+    });
 
-    } catch (error) {
-        console.error("EMAIL ERROR:", error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to send message'
-        });
-    }
+    console.log("EMAIL SENT:", data);
+
+    res.status(200).json({
+      success: true,
+      message: "Message sent successfully",
+    });
+
+  } catch (error) {
+    console.error("RESEND ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message",
+    });
+  }
 };
 
 module.exports = { sendContactMail };

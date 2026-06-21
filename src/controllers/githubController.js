@@ -11,7 +11,7 @@ const getGithubData = async (req, res) => {
     const profileRes = await fetch(
       `https://api.github.com/users/${USERNAME}`, { headers }
     );
-    console.log(profileRes.status);
+    // console.log(profileRes.status);
 
     const profile = await profileRes.json();
 
@@ -50,7 +50,7 @@ const getGithubData = async (req, res) => {
           totalCommits += me.contributions;
         }
 
-        console.log(repo.name, contribRes.status);
+        // console.log(repo.name, contribRes.status);
       } catch (err) {
         console.log(err);
       }
